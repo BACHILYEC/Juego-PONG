@@ -8,6 +8,7 @@ com\adrian\DataAccess\MatchDTO.class
 com\adrian\DataAccess\DatabaseConnection.class
 com\adrian\LogicBusiness\ScoreBoard$5.class
 com\adrian\LogicBusiness\ScoreBoard.class
+com\adrian\Launcher.class
 module-info.class
 com\adrian\LogicBusiness\ScoreBoard$1.class
 com\adrian\LogicBusiness\Game$1.class

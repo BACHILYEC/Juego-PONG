@@ -29,7 +29,7 @@ import com.adrian.DataAccess.MatchDTO;
 
 public class Game extends Pane {
 
-    private double maxBallSpeed = 15;
+    private double maxBallSpeed;
     private double scale = 1.0;
     private long lastTime;
 
@@ -158,8 +158,6 @@ public class Game extends Pane {
                         || ball.getBoundsInParent().intersects(line.getBoundsInParent())) {
 
                     ballVelocityY = -ballVelocityY;
-                    ballVelocityY *= 1.03;
-                    rectangleVelocity *= 1.03;
                 }
 
                 if (ball.getCenterX() + ball.getRadius() >= getWidth()) {
@@ -189,6 +187,10 @@ public class Game extends Pane {
                 }
                 double deltaTime = (now - lastTime) / 1_000_000_000.0;
                 lastTime = now;
+
+                ballVelocityX += 35 * deltaTime * Math.signum(ballVelocityX);
+                ballVelocityY += 35 * deltaTime * Math.signum(ballVelocityY);
+                rectangleVelocity += 20 * deltaTime;
 
                 ball.setCenterX(
                         ball.getCenterX() + ballVelocityX * deltaTime);
