@@ -1,8 +1,8 @@
-/home/bachily/VsCode/pingpong/src/main/java/com/adrian/DataAccess/DatabaseConnection.java
-/home/bachily/VsCode/pingpong/src/main/java/com/adrian/LogicBusiness/ScoreBoard.java
-/home/bachily/VsCode/pingpong/src/main/java/com/adrian/App.java
-/home/bachily/VsCode/pingpong/src/main/java/com/adrian/DataAccess/MatchDTO.java
-/home/bachily/VsCode/pingpong/src/main/java/com/adrian/LogicBusiness/Menu.java
-/home/bachily/VsCode/pingpong/src/main/java/module-info.java
-/home/bachily/VsCode/pingpong/src/main/java/com/adrian/DataAccess/MatchDAO.java
-/home/bachily/VsCode/pingpong/src/main/java/com/adrian/LogicBusiness/Game.java
+D:\WORKSPACE\Juego-PONG\src\main\java\com\adrian\DataAccess\DatabaseConnection.java
+D:\WORKSPACE\Juego-PONG\src\main\java\com\adrian\DataAccess\MatchDAO.java
+D:\WORKSPACE\Juego-PONG\src\main\java\com\adrian\App.java
+D:\WORKSPACE\Juego-PONG\src\main\java\com\adrian\LogicBusiness\ScoreBoard.java
+D:\WORKSPACE\Juego-PONG\src\main\java\module-info.java
+D:\WORKSPACE\Juego-PONG\src\main\java\com\adrian\LogicBusiness\Menu.java
+D:\WORKSPACE\Juego-PONG\src\main\java\com\adrian\LogicBusiness\Game.java
+D:\WORKSPACE\Juego-PONG\src\main\java\com\adrian\DataAccess\MatchDTO.java

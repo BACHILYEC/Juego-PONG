@@ -112,4 +112,25 @@ public class Menu extends VBox {
             stage.getScene().setRoot(this);
         }
     }
+
+    public void applyScale(double scale) {
+        title.setFont(Font.font("Arial", FontWeight.BOLD, 20 * scale));
+        title.setPadding(new Insets(10 * scale));
+
+        double labelFont = 14 * scale;
+        label1.setFont(Font.font("Arial", labelFont));
+        label2.setFont(Font.font("Arial", labelFont));
+
+        textField1.setPrefHeight(30 * scale);
+        textField1.setPrefWidth(200 * scale);
+        textField2.setPrefHeight(30 * scale);
+        textField2.setPrefWidth(200 * scale);
+
+        double buttonFont = 14 * scale;
+        play.setFont(Font.font("Arial", buttonFont));
+        scoreBoard.setFont(Font.font("Arial", buttonFont));
+
+        setSpacing(10 * scale);
+        setPadding(new Insets(10 * scale));
+    }
 }

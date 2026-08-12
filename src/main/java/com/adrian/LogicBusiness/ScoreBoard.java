@@ -159,6 +159,7 @@ public class ScoreBoard extends VBox {
             Stage stage = (Stage) getScene().getWindow();
             Menu menu = new Menu(stage);
             stage.getScene().setRoot(menu);
+            menu.applyScale(stage.getScene().getWidth() / 800.0);
         });
 
         deleteHistory = new Button("Borrar Historial");

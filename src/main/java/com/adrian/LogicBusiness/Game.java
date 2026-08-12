@@ -29,7 +29,9 @@ import com.adrian.DataAccess.MatchDTO;
 
 public class Game extends Pane {
 
-    private static final double MAX_BALL_SPEED = 15;
+    private double maxBallSpeed = 15;
+    private double scale = 1.0;
+    private long lastTime;
 
     private double startgame;
     private double endgame;
@@ -69,17 +71,13 @@ public class Game extends Pane {
         this.player2 = player2;
         setStyle("-fx-background-color: rgb(25, 25, 35);");
 
-        ball = new Circle(400, 300, 10);
+        ball = new Circle(10);
         ball.setFill(Color.rgb(100, 200, 255));
 
         leftRectangle = new Rectangle(10, 100);
-        leftRectangle.setX(30);
-        leftRectangle.setY(300);
         leftRectangle.setFill(Color.rgb(140, 140, 160));
 
         rightRectangle = new Rectangle(10, 100);
-        rightRectangle.setX(750);
-        rightRectangle.setY(300);
         rightRectangle.setFill(Color.rgb(140, 140, 160));
 
         Font labelscores = Font.font("Arial", FontWeight.BOLD, 15);
@@ -131,18 +129,14 @@ public class Game extends Pane {
 
         rm = new Random();
 
-        ball.setCenterX(getWidth() / 2);
-        ball.setCenterY(getHeight() / 2);
-
-        ballVelocityX = 4;
-        ballVelocityY = 6;
+        layoutGame();
 
         labelScoreLeft.setLayoutX((getWidth() / 4) - labelScoreLeft.prefWidth(-1));
         labelScoreLeft.setLayoutY((line.getStartY() - labelScoreLeft.getHeight()) / 2);
         labelScoreRight.setLayoutX((getWidth() * 3 / 4) - labelScoreRight.prefWidth(-1));
         labelScoreRight.setLayoutY((line.getStartY() - labelScoreRight.getHeight()) / 2);
 
-        countdown.setLayoutY(100 + ((getHeight() - 100 - countdown.getHeight()) / 2));
+        countdown.setLayoutY(line.getStartY() + ((getHeight() - line.getStartY() - countdown.getHeight()) / 2));
 
         if (rm.nextBoolean()) {
             ballVelocityX *= -1;
@@ -193,39 +187,41 @@ public class Game extends Pane {
 
                     return;
                 }
+                double deltaTime = (now - lastTime) / 1_000_000_000.0;
+                lastTime = now;
 
                 ball.setCenterX(
-                        ball.getCenterX() + ballVelocityX);
+                        ball.getCenterX() + ballVelocityX * deltaTime);
 
                 ball.setCenterY(
-                        ball.getCenterY() + ballVelocityY);
+                        ball.getCenterY() + ballVelocityY * deltaTime);
 
                 if (keysPressed.contains(KeyCode.S)
                         && leftRectangle.getY() < getHeight() - leftRectangle.getHeight()) {
 
                     leftRectangle.setY(
-                            leftRectangle.getY() + rectangleVelocity);
+                            leftRectangle.getY() + rectangleVelocity * deltaTime);
                 }
 
                 double limiteSuperior = line.getStartY() + line.getStrokeWidth() / 2;
 
                 if (keysPressed.contains(KeyCode.W)
-                        && leftRectangle.getY() - rectangleVelocity >= limiteSuperior) {
+                        && leftRectangle.getY() - rectangleVelocity * deltaTime >= limiteSuperior) {
 
-                    leftRectangle.setY(leftRectangle.getY() - rectangleVelocity);
+                    leftRectangle.setY(leftRectangle.getY() - rectangleVelocity * deltaTime);
                 }
 
                 if (keysPressed.contains(KeyCode.UP)
-                        && rightRectangle.getY() - rectangleVelocity >= limiteSuperior) {
+                        && rightRectangle.getY() - rectangleVelocity * deltaTime >= limiteSuperior) {
 
-                    rightRectangle.setY(rightRectangle.getY() - rectangleVelocity);
+                    rightRectangle.setY(rightRectangle.getY() - rectangleVelocity * deltaTime);
                 }
 
                 if (keysPressed.contains(KeyCode.DOWN)
                         && rightRectangle.getY() < getHeight() - rightRectangle.getHeight()) {
 
                     rightRectangle.setY(
-                            rightRectangle.getY() + rectangleVelocity);
+                            rightRectangle.getY() + rectangleVelocity * deltaTime);
                 }
                 if (ball.getBoundsInParent().intersects(leftRectangle.getBoundsInParent())
                         && ballVelocityX < 0) {
@@ -254,14 +250,14 @@ public class Game extends Pane {
 
                 }
 
-                if (Math.abs(ballVelocityX) > MAX_BALL_SPEED) {
-                    ballVelocityX = MAX_BALL_SPEED * Math.signum(ballVelocityX);
+                if (Math.abs(ballVelocityX) > maxBallSpeed) {
+                    ballVelocityX = maxBallSpeed * Math.signum(ballVelocityX);
                 }
-                if (Math.abs(ballVelocityY) > MAX_BALL_SPEED) {
-                    ballVelocityY = MAX_BALL_SPEED * Math.signum(ballVelocityY);
+                if (Math.abs(ballVelocityY) > maxBallSpeed) {
+                    ballVelocityY = maxBallSpeed * Math.signum(ballVelocityY);
                 }
-                if (rectangleVelocity > MAX_BALL_SPEED) {
-                    rectangleVelocity = MAX_BALL_SPEED;
+                if (rectangleVelocity > maxBallSpeed) {
+                    rectangleVelocity = maxBallSpeed;
                 }
             }
         };
@@ -274,6 +270,7 @@ public class Game extends Pane {
                     leftRectangle,
                     rightRectangle);
             startgame = System.nanoTime();
+            lastTime = System.nanoTime();
             gameLoop.start();
         });
 
@@ -325,12 +322,52 @@ public class Game extends Pane {
         countdown.setLayoutX((getWidth() - width) / 2);
     }
 
-    private void resetBall() {
-        ball.setCenterX(getWidth() / 2);
-        ball.setCenterY(100 + (getHeight() - 100) / 2);
+    private void layoutGame() {
+        scale = getWidth() / 800.0;
+        maxBallSpeed = 900 * scale;
+        rectangleVelocity = 480.0 * scale;
 
-        ballVelocityX = 4;
-        ballVelocityY = 6;
+        ball.setRadius(getHeight() / 60.0);
+
+        leftRectangle.setWidth(getWidth() / 80.0);
+        leftRectangle.setHeight(getHeight() / 6.0);
+
+        rightRectangle.setWidth(leftRectangle.getWidth());
+        rightRectangle.setHeight(leftRectangle.getHeight());
+
+        line.setStartY(getHeight() / 6.0);
+        line.setEndY(line.getStartY());
+
+        double fontScore = 15 * scale;
+        labelScoreLeft.setFont(Font.font("Arial", FontWeight.BOLD, fontScore));
+        labelScoreRight.setFont(Font.font("Arial", FontWeight.BOLD, fontScore));
+        countdown.setFont(Font.font("Arial", FontWeight.BOLD, 30 * scale));
+
+        double top = line.getStartY();
+        double centerY = top + (getHeight() - top) / 2;
+        double margin = getWidth() * 30.0 / 800;
+
+        ball.setCenterX(getWidth() / 2);
+        ball.setCenterY(centerY);
+
+        leftRectangle.setX(margin);
+        leftRectangle.setY(centerY - leftRectangle.getHeight() / 2);
+
+        rightRectangle.setX(getWidth() - leftRectangle.getWidth() - margin);
+        rightRectangle.setY(centerY - rightRectangle.getHeight() / 2);
+
+        ballVelocityX = 240 * scale;
+        ballVelocityY = 360 * scale;
+    }
+
+    private void resetBall() {
+        double top = line.getStartY();
+
+        ball.setCenterX(getWidth() / 2);
+        ball.setCenterY(top + (getHeight() - top) / 2);
+
+        ballVelocityX = 240 * scale;
+        ballVelocityY = 360 * scale;
 
         if (rm.nextBoolean()) {
             ballVelocityX *= -1;
@@ -343,14 +380,16 @@ public class Game extends Pane {
 
     private void resetRectangle() {
 
-        rectangleVelocity = 6.0;
+        rectangleVelocity = 420.0 * scale;
 
-        double centerY = 100 + (getHeight() - 100) / 2;
+        double top = line.getStartY();
+        double centerY = top + (getHeight() - top) / 2;
+        double margin = getWidth() * 30.0 / 800;
 
-        leftRectangle.setX(30);
+        leftRectangle.setX(margin);
         leftRectangle.setY(centerY - leftRectangle.getHeight() / 2);
 
-        rightRectangle.setX(getWidth() - 40);
+        rightRectangle.setX(getWidth() - leftRectangle.getWidth() - margin);
         rightRectangle.setY(centerY - rightRectangle.getHeight() / 2);
     }
 
@@ -389,8 +428,10 @@ public class Game extends Pane {
             Menu menu = new Menu(stage);
 
             stage.getScene().setRoot(menu);
+            menu.applyScale(stage.getScene().getWidth() / 800.0);
 
         } else {
+            lastTime = System.nanoTime();
             gameLoop.start();
         }
     }
