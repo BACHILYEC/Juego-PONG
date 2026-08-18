@@ -41,6 +41,9 @@ public class Game extends Pane {
     private static final Color LINE_COLOR = Color.rgb(38, 36, 34);
     private static final Color TEXT = Color.rgb(225, 220, 210);
 
+    private double ballAcceleration = 35;
+    private double rectangleAcceleration = 30;
+
     private double maxBallSpeed;
     private double scale = 1.0;
     private long lastTime;
@@ -214,9 +217,10 @@ public class Game extends Pane {
                 double deltaTime = (now - lastTime) / 1_000_000_000.0;
                 lastTime = now;
 
-                ballVelocityX += 35 * deltaTime * Math.signum(ballVelocityX);
-                ballVelocityY += 35 * deltaTime * Math.signum(ballVelocityY);
-                rectangleVelocity += 20 * deltaTime;
+                ballVelocityX += ballAcceleration * deltaTime * Math.signum(ballVelocityX);
+                ballVelocityY += ballAcceleration * deltaTime * Math.signum(ballVelocityY);
+
+                rectangleVelocity += rectangleAcceleration * deltaTime;
 
                 ball.setCenterX(
                         ball.getCenterX() + ballVelocityX * deltaTime);
@@ -260,9 +264,6 @@ public class Game extends Pane {
                                     + ball.getRadius());
 
                     ballVelocityX = -ballVelocityX;
-                    ballVelocityX *= 1.03;
-                    rectangleVelocity *= 1.03;
-
                 }
 
                 if (ball.getBoundsInParent().intersects(rightRectangle.getBoundsInParent())
@@ -273,9 +274,6 @@ public class Game extends Pane {
                                     - ball.getRadius());
 
                     ballVelocityX = -ballVelocityX;
-                    ballVelocityX *= 1.03;
-                    rectangleVelocity *= 1.03;
-
                 }
 
                 if (Math.abs(ballVelocityX) > maxBallSpeed) {
