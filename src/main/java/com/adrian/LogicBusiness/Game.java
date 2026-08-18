@@ -7,9 +7,13 @@ import javafx.animation.Timeline;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Stop;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
@@ -23,11 +27,20 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 
+import java.sql.Connection;
+
 import com.adrian.DataAccess.DatabaseConnection;
 import com.adrian.DataAccess.MatchDAO;
 import com.adrian.DataAccess.MatchDTO;
 
 public class Game extends Pane {
+
+    private static final Color BG = Color.rgb(14, 14, 20);
+    private static final Color P1_COLOR = Color.rgb(175, 145, 85);
+    private static final Color P2_COLOR = Color.rgb(155, 90, 80);
+    private static final Color BALL_COLOR = Color.rgb(215, 205, 185);
+    private static final Color LINE_COLOR = Color.rgb(38, 36, 34);
+    private static final Color TEXT = Color.rgb(225, 220, 210);
 
     private double maxBallSpeed;
     private double scale = 1.0;
@@ -69,26 +82,39 @@ public class Game extends Pane {
     public Game(String player1, String player2) {
         this.player1 = player1;
         this.player2 = player2;
-        setStyle("-fx-background-color: rgb(25, 25, 35);");
+        setStyle("-fx-background-color: #0e0e14;");
 
         ball = new Circle(10);
-        ball.setFill(Color.rgb(100, 200, 255));
+        ball.setFill(BALL_COLOR);
+        ball.setEffect(new DropShadow(18, Color.rgb(180, 170, 140)));
 
         leftRectangle = new Rectangle(10, 100);
-        leftRectangle.setFill(Color.rgb(140, 140, 160));
+        leftRectangle.setArcWidth(6);
+        leftRectangle.setArcHeight(6);
+        leftRectangle.setFill(new LinearGradient(
+                0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
+                new Stop(0, P1_COLOR),
+                new Stop(1, Color.rgb(130, 105, 55))));
+        leftRectangle.setEffect(new DropShadow(12, Color.rgb(0, 0, 0)));
 
         rightRectangle = new Rectangle(10, 100);
-        rightRectangle.setFill(Color.rgb(140, 140, 160));
+        rightRectangle.setArcWidth(6);
+        rightRectangle.setArcHeight(6);
+        rightRectangle.setFill(new LinearGradient(
+                0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
+                new Stop(0, P2_COLOR),
+                new Stop(1, Color.rgb(110, 60, 50))));
+        rightRectangle.setEffect(new DropShadow(12, Color.rgb(0, 0, 0)));
 
-        Font labelscores = Font.font("Arial", FontWeight.BOLD, 15);
+        Font labelscores = Font.font("System", FontWeight.BOLD, 15);
         scoreLeft = 0;
-        labelScoreLeft = new Label(player1 + ": \n" + String.valueOf(scoreLeft));
-        labelScoreLeft.setTextFill(Color.rgb(220, 220, 230));
+        labelScoreLeft = new Label(player1 + "\n" + String.valueOf(scoreLeft));
+        labelScoreLeft.setTextFill(P1_COLOR);
         labelScoreLeft.setFont(labelscores);
 
         scoreRight = 0;
-        labelScoreRight = new Label(player2 + ": \n" + String.valueOf(scoreRight));
-        labelScoreRight.setTextFill(Color.rgb(220, 220, 230));
+        labelScoreRight = new Label(player2 + "\n" + String.valueOf(scoreRight));
+        labelScoreRight.setTextFill(P2_COLOR);
         labelScoreRight.setFont(labelscores);
 
         line = new Line();
@@ -96,12 +122,13 @@ public class Game extends Pane {
         line.endXProperty().bind(widthProperty());
         line.setStartY(100);
         line.setEndY(100);
-        line.setStroke(Color.rgb(80, 80, 100));
-        line.setStrokeWidth(3);
+        line.setStroke(LINE_COLOR);
+        line.setStrokeWidth(1);
 
         countdown = new Label();
-        countdown.setFont(Font.font("Arial", FontWeight.BOLD, 30));
-        countdown.setTextFill(Color.rgb(220, 220, 230));
+        countdown.setFont(Font.font("System", FontWeight.BOLD, 30));
+        countdown.setTextFill(TEXT);
+        countdown.setEffect(new DropShadow(20, Color.rgb(0, 0, 0)));
 
         getChildren().addAll(labelScoreLeft, labelScoreRight,
                 line,
@@ -151,8 +178,8 @@ public class Game extends Pane {
             @Override
             public void handle(long now) {
 
-                labelScoreLeft.setText(player1 + ": \n" + String.valueOf(scoreLeft));
-                labelScoreRight.setText(player2 + ": \n" + String.valueOf(scoreRight));
+                labelScoreLeft.setText(player1 + "\n" + String.valueOf(scoreLeft));
+                labelScoreRight.setText(player2 + "\n" + String.valueOf(scoreRight));
 
                 if (ball.getCenterY() + ball.getRadius() >= getHeight()
                         || ball.getBoundsInParent().intersects(line.getBoundsInParent())) {
@@ -278,42 +305,45 @@ public class Game extends Pane {
 
         tempLine = new Timeline(
                 new KeyFrame(Duration.seconds(0), event -> {
-                    countdown.setText("Presiona ESC para salir");
-                    countdown.setTextFill(Color.rgb(207, 188, 66));
+                    countdown.setText("ESC para salir");
+                    countdown.setTextFill(Color.rgb(100, 98, 90));
                     centerLabel();
                 }),
                 new KeyFrame(
                         Duration.seconds(1),
                         event -> {
-                            countdown.setText("3!");
-                            countdown.setTextFill(Color.rgb(255, 120, 120));
+                            countdown.setText("3");
+                            countdown.setTextFill(ACCENT);
                             centerLabel();
                         }),
                 new KeyFrame(
                         Duration.seconds(2),
                         event -> {
-                            countdown.setText("2!");
-                            countdown.setTextFill(Color.rgb(255, 210, 90));
+                            countdown.setText("2");
+                            countdown.setTextFill(ACCENT);
                             centerLabel();
                         }),
                 new KeyFrame(
                         Duration.seconds(3),
                         event -> {
-                            countdown.setText("1!");
-                            countdown.setTextFill(Color.rgb(120, 220, 140));
+                            countdown.setText("1");
+                            countdown.setTextFill(ACCENT);
                             centerLabel();
                         }),
                 new KeyFrame(
                         Duration.seconds(4),
                         event -> {
-                            countdown.setText("AHORA!");
-                            countdown.setTextFill(Color.rgb(220, 220, 230));
+                            countdown.setText("GO");
+                            countdown.setTextFill(TEXT);
+                            countdown.setEffect(new DropShadow(25, Color.rgb(170, 140, 80)));
                             centerLabel();
                             pause.play();
                         }));
         tempLine.play();
 
     }
+
+    private static final Color ACCENT = Color.rgb(195, 165, 105);
 
     private void centerLabel() {
         countdown.applyCss();
@@ -341,9 +371,9 @@ public class Game extends Pane {
         line.setEndY(line.getStartY());
 
         double fontScore = 15 * scale;
-        labelScoreLeft.setFont(Font.font("Arial", FontWeight.BOLD, fontScore));
-        labelScoreRight.setFont(Font.font("Arial", FontWeight.BOLD, fontScore));
-        countdown.setFont(Font.font("Arial", FontWeight.BOLD, 30 * scale));
+        labelScoreLeft.setFont(Font.font("System", FontWeight.BOLD, fontScore));
+        labelScoreRight.setFont(Font.font("System", FontWeight.BOLD, fontScore));
+        countdown.setFont(Font.font("System", FontWeight.BOLD, 30 * scale));
 
         double top = line.getStartY();
         double centerY = top + (getHeight() - top) / 2;
@@ -401,8 +431,8 @@ public class Game extends Pane {
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Salir");
-        alert.setHeaderText("¿Quieres salir del juego?");
-        alert.setContentText("La partida actual terminará.");
+        alert.setHeaderText("Quieres salir del juego?");
+        alert.setContentText("La partida actual terminara.");
 
         Optional<ButtonType> result = alert.showAndWait();
 
@@ -414,9 +444,10 @@ public class Game extends Pane {
             MatchDTO dto = new MatchDTO(player1, player2, scoreLeft, scoreRight, timeofgame);
 
             try {
-                MatchDAO dao = new MatchDAO(DatabaseConnection.getConnection());
+                Connection conn = DatabaseConnection.getConnection();
+                MatchDAO dao = new MatchDAO(conn);
                 dao.save(dto);
-
+                DatabaseConnection.close(conn);
             } catch (Exception e) {
                 Alert errorAlert = new Alert(Alert.AlertType.ERROR);
                 errorAlert.setTitle("Error de base de datos");

@@ -6,6 +6,8 @@ import com.adrian.DataAccess.DatabaseConnection;
 import com.adrian.DataAccess.MatchDAO;
 import com.adrian.DataAccess.MatchDTO;
 
+import java.sql.Connection;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -16,6 +18,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Border;
@@ -25,6 +28,9 @@ import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Stop;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
@@ -33,6 +39,12 @@ import java.util.Optional;
 
 public class ScoreBoard extends VBox {
 
+    private static final Color BG = Color.rgb(14, 14, 20);
+    private static final Color CARD = Color.rgb(22, 22, 30);
+    private static final Color ACCENT = Color.rgb(195, 165, 105);
+    private static final Color TEXT = Color.rgb(225, 220, 210);
+    private static final Color TEXT_DIM = Color.rgb(110, 108, 100);
+
     private MatchDAO dao;
     private Label title;
     private TableView<MatchDTO> table;
@@ -40,34 +52,48 @@ public class ScoreBoard extends VBox {
     private Button deleteHistory;
 
     public ScoreBoard() {
-        setStyle("-fx-background-color: rgb(25, 25, 35);");
+        setStyle("-fx-background-color: #0e0e14;");
 
         Background cardBg = new Background(
-                new BackgroundFill(Color.rgb(35, 40, 55), new CornerRadii(10), null));
-        Background btnBg = new Background(
-                new BackgroundFill(Color.rgb(45, 50, 65), new CornerRadii(10), null));
-        Background btnHoverBg = new Background(
-                new BackgroundFill(Color.rgb(60, 65, 80), new CornerRadii(10), null));
+                new BackgroundFill(CARD, new CornerRadii(14), null));
+        Background btnPrimaryBg = new Background(
+                new BackgroundFill(new LinearGradient(
+                        0, 0, 1, 0, true, CycleMethod.NO_CYCLE,
+                        new Stop(0, Color.rgb(175, 145, 85)),
+                        new Stop(1, Color.rgb(135, 105, 55))),
+                        new CornerRadii(10), null));
+        Background btnPrimaryHover = new Background(
+                new BackgroundFill(new LinearGradient(
+                        0, 0, 1, 0, true, CycleMethod.NO_CYCLE,
+                        new Stop(0, Color.rgb(205, 175, 105)),
+                        new Stop(1, Color.rgb(165, 135, 75))),
+                        new CornerRadii(10), null));
+        Background deleteBg = new Background(
+                new BackgroundFill(Color.rgb(34, 24, 22), new CornerRadii(10), null));
+        Background deleteHoverBg = new Background(
+                new BackgroundFill(Color.rgb(50, 32, 30), new CornerRadii(10), null));
 
-        title = new Label("MARCADOR");
-        title.setTextFill(Color.rgb(100, 200, 255));
-        title.setFont(Font.font("Arial", FontWeight.BOLD, 24));
+        title = new Label("HISTORIAL");
+        title.setTextFill(ACCENT);
+        title.setFont(Font.font("System", FontWeight.BOLD, 26));
         title.setBackground(cardBg);
-        title.setPadding(new Insets(10, 30, 10, 30));
+        title.setPadding(new Insets(12, 40, 12, 40));
         title.setBorder(new Border(
-                new BorderStroke(Color.rgb(100, 200, 255), BorderStrokeStyle.SOLID, new CornerRadii(10),
+                new BorderStroke(Color.rgb(50, 48, 42), BorderStrokeStyle.SOLID, new CornerRadii(14),
                         new BorderWidths(1))));
+        title.setEffect(new DropShadow(30, Color.rgb(0, 0, 0)));
 
         table = new TableView<>();
         table.setBackground(new Background(
-                new BackgroundFill(Color.rgb(30, 35, 50), new CornerRadii(8), null)));
+                new BackgroundFill(CARD, new CornerRadii(10), null)));
 
         Label placeholder = new Label("No hay partidas registradas");
-        placeholder.setTextFill(Color.rgb(120, 120, 140));
+        placeholder.setTextFill(TEXT_DIM);
+        placeholder.setFont(Font.font("System", 13));
         table.setPlaceholder(placeholder);
 
-        String headerStyle = "-fx-background-color: rgb(137, 153, 199); -fx-text-fill: rgb(220, 220, 230); -fx-font-weight: bold;";
-        String cellStyle = "-fx-text-fill: rgb(200, 200, 210); -fx-background-color: rgb(30, 35, 50);";
+        String headerStyle = "-fx-background-color: #161618; -fx-text-fill: #c3a569; -fx-font-weight: bold; -fx-font-family: System;";
+        String cellStyle = "-fx-text-fill: #e1dcc8; -fx-background-color: #161618; -fx-font-family: System;";
 
         TableColumn<MatchDTO, String> player1Column = new TableColumn<>("Jugador 1");
         player1Column.setCellValueFactory(new PropertyValueFactory<>("player1"));
@@ -109,7 +135,7 @@ public class ScoreBoard extends VBox {
             }
         });
 
-        TableColumn<MatchDTO, Long> durationColumn = new TableColumn<>("Duración (s)");
+        TableColumn<MatchDTO, Long> durationColumn = new TableColumn<>("Duracion (s)");
         durationColumn.setCellValueFactory(new PropertyValueFactory<>("durationSeconds"));
         durationColumn.setStyle(headerStyle + "-fx-alignment: CENTER;");
         durationColumn.setCellFactory(column -> new javafx.scene.control.TableCell<>() {
@@ -143,17 +169,21 @@ public class ScoreBoard extends VBox {
 
         loadData();
 
-        back = new Button("Regresar");
-        back.setTextFill(Color.rgb(220, 220, 230));
-        back.setFont(Font.font("Arial", FontWeight.BOLD, 14));
-        back.setBackground(btnBg);
-        back.setBorder(new Border(
-                new BorderStroke(Color.rgb(80, 80, 100), BorderStrokeStyle.SOLID, new CornerRadii(10),
-                        new BorderWidths(1))));
-        back.setPadding(new Insets(10, 40, 10, 40));
+        back = new Button("REGRESAR");
+        back.setTextFill(TEXT);
+        back.setFont(Font.font("System", FontWeight.NORMAL, 13));
+        back.setBackground(btnPrimaryBg);
+        back.setPadding(new Insets(12, 45, 12, 45));
+        back.setEffect(new DropShadow(12, Color.rgb(0, 0, 0)));
 
-        back.setOnMouseEntered(e -> back.setBackground(btnHoverBg));
-        back.setOnMouseExited(e -> back.setBackground(btnBg));
+        back.setOnMouseEntered(e -> {
+            back.setBackground(btnPrimaryHover);
+            back.setEffect(new DropShadow(18, Color.rgb(150, 120, 60)));
+        });
+        back.setOnMouseExited(e -> {
+            back.setBackground(btnPrimaryBg);
+            back.setEffect(new DropShadow(12, Color.rgb(0, 0, 0)));
+        });
 
         back.setOnAction(event -> {
             Stage stage = (Stage) getScene().getWindow();
@@ -162,31 +192,38 @@ public class ScoreBoard extends VBox {
             menu.applyScale(stage.getScene().getWidth() / 800.0);
         });
 
-        deleteHistory = new Button("Borrar Historial");
-        deleteHistory.setTextFill(Color.rgb(220, 220, 230));
-        deleteHistory.setFont(Font.font("Arial", FontWeight.BOLD, 14));
-        deleteHistory.setBackground(btnBg);
+        deleteHistory = new Button("BORRAR HISTORIAL");
+        deleteHistory.setTextFill(Color.rgb(170, 110, 100));
+        deleteHistory.setFont(Font.font("System", FontWeight.NORMAL, 13));
+        deleteHistory.setBackground(deleteBg);
+        deleteHistory.setPadding(new Insets(12, 35, 12, 35));
         deleteHistory.setBorder(new Border(
-                new BorderStroke(Color.rgb(150, 60, 60), BorderStrokeStyle.SOLID, new CornerRadii(10),
+                new BorderStroke(Color.rgb(60, 40, 38), BorderStrokeStyle.SOLID, new CornerRadii(10),
                         new BorderWidths(1))));
-        deleteHistory.setPadding(new Insets(10, 30, 10, 30));
 
-        deleteHistory.setOnMouseEntered(e -> deleteHistory.setBackground(
-                new Background(new BackgroundFill(Color.rgb(150, 60, 60), new CornerRadii(10), null))));
-        deleteHistory.setOnMouseExited(e -> deleteHistory.setBackground(btnBg));
+        deleteHistory.setOnMouseEntered(e -> {
+            deleteHistory.setBackground(deleteHoverBg);
+            deleteHistory.setTextFill(Color.rgb(200, 130, 120));
+        });
+        deleteHistory.setOnMouseExited(e -> {
+            deleteHistory.setBackground(deleteBg);
+            deleteHistory.setTextFill(Color.rgb(170, 110, 100));
+        });
 
         deleteHistory.setOnAction(event -> {
             Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
             confirm.setTitle("Borrar historial");
-            confirm.setHeaderText("¿Estás seguro?");
-            confirm.setContentText("Se eliminarán todas las partidas registradas.");
+            confirm.setHeaderText("Estas seguro?");
+            confirm.setContentText("Se eliminaran todas las partidas registradas.");
 
             Optional<ButtonType> result = confirm.showAndWait();
 
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 try {
-                    MatchDAO dao = new MatchDAO(DatabaseConnection.getConnection());
+                    Connection conn = DatabaseConnection.getConnection();
+                    MatchDAO dao = new MatchDAO(conn);
                     dao.delete();
+                    DatabaseConnection.close(conn);
                     table.getItems().clear();
                 } catch (Exception e) {
                     Alert errorAlert = new Alert(Alert.AlertType.ERROR);
@@ -200,15 +237,17 @@ public class ScoreBoard extends VBox {
 
         setAlignment(Pos.TOP_CENTER);
         setSpacing(20);
-        setPadding(new Insets(20));
+        setPadding(new Insets(25));
         getChildren().addAll(title, table, back, deleteHistory);
     }
 
     private void loadData() {
         try {
-            dao = new MatchDAO(DatabaseConnection.getConnection());
+            Connection conn = DatabaseConnection.getConnection();
+            dao = new MatchDAO(conn);
             List<MatchDTO> dtos = dao.findAll();
             table.getItems().addAll(dtos);
+            DatabaseConnection.close(conn);
         } catch (Exception e) {
             Alert errorAlert = new Alert(Alert.AlertType.ERROR);
             errorAlert.setTitle("Error");

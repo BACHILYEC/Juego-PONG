@@ -14,17 +14,17 @@ public class App extends Application {
     @Override
     public void start(Stage stage) {
 
-        stage.setTitle("Pong");
+        stage.setTitle("PONG");
 
         Screen screen = Screen.getPrimary();
         Rectangle2D bounds = screen.getVisualBounds();
 
-        double width = bounds.getWidth() * 0.55;
+        double width = bounds.getWidth() * 0.5;
         double height = bounds.getHeight() * 0.8;
 
         Menu menu = new Menu(stage);
         Scene scene = new Scene(menu, width, height);
-        scene.setFill(Color.rgb(25, 25, 35));
+        scene.setFill(Color.rgb(14, 14, 20));
 
         stage.setScene(scene);
         menu.applyScale(width / 800.0);
