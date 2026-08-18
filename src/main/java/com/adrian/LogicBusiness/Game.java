@@ -35,7 +35,6 @@ import com.adrian.DataAccess.MatchDTO;
 
 public class Game extends Pane {
 
-    private static final Color BG = Color.rgb(14, 14, 20);
     private static final Color P1_COLOR = Color.rgb(175, 145, 85);
     private static final Color P2_COLOR = Color.rgb(155, 90, 80);
     private static final Color BALL_COLOR = Color.rgb(215, 205, 185);

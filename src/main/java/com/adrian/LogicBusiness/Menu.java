@@ -27,7 +27,6 @@ import javafx.stage.Stage;
 
 public class Menu extends VBox {
 
-    private static final Color BG = Color.rgb(14, 14, 20);
     private static final Color CARD = Color.rgb(22, 22, 30);
     private static final Color ACCENT = Color.rgb(195, 165, 105);
     private static final Color TEXT = Color.rgb(225, 220, 210);
