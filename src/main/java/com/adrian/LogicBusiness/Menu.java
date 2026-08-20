@@ -89,6 +89,7 @@ public class Menu extends VBox {
         textField1.setBorder(new Border(
                 new BorderStroke(INPUT_BORDER, BorderStrokeStyle.SOLID, new CornerRadii(8),
                         new BorderWidths(1))));
+        textField1.setStyle("-fx-text-fill: white;");
 
         label2 = new Label("JUGADOR 2");
         label2.setTextFill(TEXT_DIM);
@@ -105,6 +106,7 @@ public class Menu extends VBox {
         textField2.setBorder(new Border(
                 new BorderStroke(INPUT_BORDER, BorderStrokeStyle.SOLID, new CornerRadii(8),
                         new BorderWidths(1))));
+        textField2.setStyle("-fx-text-fill: white;");
 
         play = new Button("JUGAR");
         play.setTextFill(Color.rgb(18, 16, 10));
