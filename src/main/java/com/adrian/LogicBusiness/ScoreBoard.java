@@ -236,7 +236,7 @@ public class ScoreBoard extends VBox {
                     Alert errorAlert = new Alert(Alert.AlertType.ERROR);
                     errorAlert.setTitle("Error");
                     errorAlert.setHeaderText("No se pudo borrar el historial");
-                    errorAlert.setContentText(e.getMessage());
+                    errorAlert.setContentText("Ruta: " + DatabaseConnection.getDbPath() + "\n\n" + e.getMessage());
                     errorAlert.showAndWait();
                 }
             }
@@ -259,7 +259,7 @@ public class ScoreBoard extends VBox {
             Alert errorAlert = new Alert(Alert.AlertType.ERROR);
             errorAlert.setTitle("Error");
             errorAlert.setHeaderText("No se pudo cargar el historial");
-            errorAlert.setContentText(e.getMessage());
+            errorAlert.setContentText("Ruta: " + DatabaseConnection.getDbPath() + "\n\n" + e.getMessage());
             errorAlert.showAndWait();
         }
     }

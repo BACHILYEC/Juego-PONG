@@ -449,7 +449,7 @@ public class Game extends Pane {
                 Alert errorAlert = new Alert(Alert.AlertType.ERROR);
                 errorAlert.setTitle("Error de base de datos");
                 errorAlert.setHeaderText("No se pudo guardar la partida");
-                errorAlert.setContentText(e.getMessage());
+                errorAlert.setContentText("Ruta: " + DatabaseConnection.getDbPath() + "\n\n" + e.getMessage());
                 errorAlert.showAndWait();
             }
 
