@@ -15,6 +15,7 @@ public class App extends Application {
     public void start(Stage stage) {
 
         stage.setTitle("PONG");
+        stage.setResizable(false);
 
         Screen screen = Screen.getPrimary();
         Rectangle2D bounds = screen.getVisualBounds();

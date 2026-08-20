@@ -176,17 +176,41 @@ public class Game extends Pane {
         }
 
         gameLoop = new AnimationTimer() {
-
             @Override
             public void handle(long now) {
 
                 labelScoreLeft.setText(player1 + "\n" + String.valueOf(scoreLeft));
                 labelScoreRight.setText(player2 + "\n" + String.valueOf(scoreRight));
 
-                if (ball.getCenterY() + ball.getRadius() >= getHeight()
-                        || ball.getBoundsInParent().intersects(line.getBoundsInParent())) {
+                double deltaTime = (now - lastTime) / 1_000_000_000.0;
+                lastTime = now;
 
-                    ballVelocityY = -ballVelocityY;
+                ballVelocityX += ballAcceleration * deltaTime * Math.signum(ballVelocityX);
+                ballVelocityY += ballAcceleration * deltaTime * Math.signum(ballVelocityY);
+                rectangleVelocity += rectangleAcceleration * deltaTime;
+
+                if (Math.abs(ballVelocityX) > maxBallSpeed) {
+                    ballVelocityX = maxBallSpeed * Math.signum(ballVelocityX);
+                }
+                if (Math.abs(ballVelocityY) > maxBallSpeed) {
+                    ballVelocityY = maxBallSpeed * Math.signum(ballVelocityY);
+                }
+                if (rectangleVelocity > maxBallSpeed) {
+                    rectangleVelocity = maxBallSpeed;
+                }
+
+                ball.setCenterX(ball.getCenterX() + ballVelocityX * deltaTime);
+                ball.setCenterY(ball.getCenterY() + ballVelocityY * deltaTime);
+
+                double topLimit = line.getStartY() + line.getStrokeWidth() / 2 + ball.getRadius();
+                double bottomLimit = getHeight() - ball.getRadius();
+
+                if (ball.getCenterY() <= topLimit) {
+                    ball.setCenterY(topLimit);
+                    ballVelocityY = Math.abs(ballVelocityY);
+                } else if (ball.getCenterY() >= bottomLimit) {
+                    ball.setCenterY(bottomLimit);
+                    ballVelocityY = -Math.abs(ballVelocityY);
                 }
 
                 if (ball.getCenterX() + ball.getRadius() >= getWidth()) {
@@ -198,7 +222,6 @@ public class Game extends Pane {
                     resetBall();
                     resetRectangle();
                     tempLine.playFromStart();
-
                     return;
                 }
 
@@ -211,79 +234,41 @@ public class Game extends Pane {
                     resetBall();
                     resetRectangle();
                     tempLine.playFromStart();
-
                     return;
                 }
-                double deltaTime = (now - lastTime) / 1_000_000_000.0;
-                lastTime = now;
-
-                ballVelocityX += ballAcceleration * deltaTime * Math.signum(ballVelocityX);
-                ballVelocityY += ballAcceleration * deltaTime * Math.signum(ballVelocityY);
-
-                rectangleVelocity += rectangleAcceleration * deltaTime;
-
-                ball.setCenterX(
-                        ball.getCenterX() + ballVelocityX * deltaTime);
-
-                ball.setCenterY(
-                        ball.getCenterY() + ballVelocityY * deltaTime);
 
                 if (keysPressed.contains(KeyCode.S)
                         && leftRectangle.getY() < getHeight() - leftRectangle.getHeight()) {
-
-                    leftRectangle.setY(
-                            leftRectangle.getY() + rectangleVelocity * deltaTime);
+                    leftRectangle.setY(leftRectangle.getY() + rectangleVelocity * deltaTime);
                 }
 
                 double limiteSuperior = line.getStartY() + line.getStrokeWidth() / 2;
 
                 if (keysPressed.contains(KeyCode.W)
                         && leftRectangle.getY() - rectangleVelocity * deltaTime >= limiteSuperior) {
-
                     leftRectangle.setY(leftRectangle.getY() - rectangleVelocity * deltaTime);
                 }
 
                 if (keysPressed.contains(KeyCode.UP)
                         && rightRectangle.getY() - rectangleVelocity * deltaTime >= limiteSuperior) {
-
                     rightRectangle.setY(rightRectangle.getY() - rectangleVelocity * deltaTime);
                 }
 
                 if (keysPressed.contains(KeyCode.DOWN)
                         && rightRectangle.getY() < getHeight() - rightRectangle.getHeight()) {
-
-                    rightRectangle.setY(
-                            rightRectangle.getY() + rectangleVelocity * deltaTime);
+                    rightRectangle.setY(rightRectangle.getY() + rectangleVelocity * deltaTime);
                 }
+
                 if (ball.getBoundsInParent().intersects(leftRectangle.getBoundsInParent())
                         && ballVelocityX < 0) {
-
-                    ball.setCenterX(
-                            leftRectangle.getX()
-                                    + leftRectangle.getWidth()
-                                    + ball.getRadius());
-
-                    ballVelocityX = -ballVelocityX;
+                    ball.setCenterX(leftRectangle.getX() + leftRectangle.getWidth() + ball.getRadius());
+                    ballVelocityX = Math.abs(ballVelocityX);
                 }
 
                 if (ball.getBoundsInParent().intersects(rightRectangle.getBoundsInParent())
                         && ballVelocityX > 0) {
-
-                    ball.setCenterX(
-                            rightRectangle.getX()
-                                    - ball.getRadius());
-
-                    ballVelocityX = -ballVelocityX;
-                }
-
-                if (Math.abs(ballVelocityX) > maxBallSpeed) {
-                    ballVelocityX = maxBallSpeed * Math.signum(ballVelocityX);
-                }
-                if (Math.abs(ballVelocityY) > maxBallSpeed) {
-                    ballVelocityY = maxBallSpeed * Math.signum(ballVelocityY);
-                }
-                if (rectangleVelocity > maxBallSpeed) {
-                    rectangleVelocity = maxBallSpeed;
+                    ball.setCenterX(rightRectangle.getX() - ball.getRadius());
+                    ballVelocityX = -Math.abs(ballVelocityX);
                 }
             }
         };
