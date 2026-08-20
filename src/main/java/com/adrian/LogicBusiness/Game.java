@@ -41,8 +41,8 @@ public class Game extends Pane {
     private static final Color LINE_COLOR = Color.rgb(38, 36, 34);
     private static final Color TEXT = Color.rgb(225, 220, 210);
 
-    private double ballAcceleration = 35;
-    private double rectangleAcceleration = 30;
+    private double ballAcceleration = 25;
+    private double rectangleAcceleration = 20;
 
     private double maxBallSpeed;
     private double scale = 1.0;
@@ -82,6 +82,7 @@ public class Game extends Pane {
     private String player2;
 
     public Game(String player1, String player2) {
+        startgame = System.nanoTime();
         this.player1 = player1;
         this.player2 = player2;
         setStyle("-fx-background-color: #0e0e14;");
@@ -280,7 +281,6 @@ public class Game extends Pane {
             getChildren().addAll(ball,
                     leftRectangle,
                     rightRectangle);
-            startgame = System.nanoTime();
             lastTime = System.nanoTime();
             gameLoop.start();
         });

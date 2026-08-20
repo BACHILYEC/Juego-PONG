@@ -64,7 +64,7 @@ public class Menu extends VBox {
         Background btnSecondaryHover = new Background(
                 new BackgroundFill(Color.rgb(36, 36, 46), new CornerRadii(10), null));
 
-        title = new Label("PONG");
+        title = new Label("Clarita-Pong");
         title.setTextFill(ACCENT);
         title.setFont(Font.font("System", FontWeight.BOLD, 36));
         title.setBackground(cardBg);

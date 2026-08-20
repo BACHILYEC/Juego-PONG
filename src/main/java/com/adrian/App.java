@@ -20,7 +20,7 @@ public class App extends Application {
         Screen screen = Screen.getPrimary();
         Rectangle2D bounds = screen.getVisualBounds();
 
-        double width = bounds.getWidth() * 0.5;
+        double width = bounds.getWidth() * 0.7;
         double height = bounds.getHeight() * 0.8;
 
         Menu menu = new Menu(stage);
