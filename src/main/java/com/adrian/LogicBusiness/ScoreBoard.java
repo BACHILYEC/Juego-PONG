@@ -85,6 +85,8 @@ public class ScoreBoard extends VBox {
         table = new TableView<>();
         table.setBackground(new Background(
                 new BackgroundFill(CARD, new CornerRadii(10), null)));
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        table.setMaxWidth(Double.MAX_VALUE);
 
         Label placeholder = new Label("No hay partidas registradas");
         placeholder.setTextFill(TEXT_DIM);
@@ -163,15 +165,22 @@ public class ScoreBoard extends VBox {
         table.getColumns().add(scoreColumn);
         table.getColumns().add(durationColumn);
         table.getColumns().add(dateColumn);
+
+        player1Column.setPrefWidth(150);
+        player2Column.setPrefWidth(150);
+        scoreColumn.setPrefWidth(120);
+        durationColumn.setPrefWidth(100);
+        dateColumn.setPrefWidth(170);
+
         table.setPrefHeight(400);
 
         loadData();
 
         back = new Button("REGRESAR");
         back.setTextFill(TEXT);
-        back.setFont(Font.font("System", FontWeight.NORMAL, 13));
+        back.setFont(Font.font("System", FontWeight.NORMAL, 15));
         back.setBackground(btnPrimaryBg);
-        back.setPadding(new Insets(12, 45, 12, 45));
+        back.setPadding(new Insets(14, 60, 14, 60));
         back.setEffect(new DropShadow(12, Color.rgb(0, 0, 0)));
 
         back.setOnMouseEntered(e -> {
@@ -192,9 +201,9 @@ public class ScoreBoard extends VBox {
 
         deleteHistory = new Button("BORRAR HISTORIAL");
         deleteHistory.setTextFill(Color.rgb(170, 110, 100));
-        deleteHistory.setFont(Font.font("System", FontWeight.NORMAL, 13));
+        deleteHistory.setFont(Font.font("System", FontWeight.NORMAL, 15));
         deleteHistory.setBackground(deleteBg);
-        deleteHistory.setPadding(new Insets(12, 35, 12, 35));
+        deleteHistory.setPadding(new Insets(14, 50, 14, 50));
         deleteHistory.setBorder(new Border(
                 new BorderStroke(Color.rgb(60, 40, 38), BorderStrokeStyle.SOLID, new CornerRadii(10),
                         new BorderWidths(1))));
@@ -233,9 +242,9 @@ public class ScoreBoard extends VBox {
             }
         });
 
-        setAlignment(Pos.TOP_CENTER);
-        setSpacing(20);
-        setPadding(new Insets(25));
+        setAlignment(Pos.CENTER);
+        setSpacing(25);
+        setPadding(new Insets(30));
         getChildren().addAll(title, table, back, deleteHistory);
     }
 
